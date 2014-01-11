@@ -4,7 +4,7 @@ function echo_server_log($log){
 	file_put_contents("log.txt", $log, FILE_APPEND);
 }
 
-define ( "TOKEN", "echo_server" );
+define ( "TOKEN", "czdiy" );
 $right = "开灯";
 
 function checkSignature() {
@@ -56,7 +56,9 @@ if('text' != $msgType) {
 	$content = $xmlObj->Content;
 	if ($content == $right) {
 		$retMsg = "正确";
-	}
+    }else{
+    	$retMsg = $content;
+    }
 
 }
 $retTmp = "<xml>
