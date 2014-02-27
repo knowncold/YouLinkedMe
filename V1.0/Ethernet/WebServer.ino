@@ -86,6 +86,10 @@ void loop() {
           client.println("<?php echo ");
           client.print("!" );
           client.println("?>");
+
+          client.println("<form>");
+          client.println("<input type="button" value="Hello world!">");
+          client.println("</form>");
           client.println("</html>");
           break;
         }
