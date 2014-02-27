@@ -88,7 +88,7 @@ void loop() {
           client.println("?>");
 
           client.println("<form>");
-          client.println("<input type=button value=Helloworld!>");
+          client.println("<input type=submit value=Helloworld!>");
           client.println("</form>");
 
           client.println("<select name=cars>");
