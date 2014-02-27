@@ -88,8 +88,15 @@ void loop() {
           client.println("?>");
 
           client.println("<form>");
-          client.println("<input type="button" value="Hello world!">");
+          client.println("<input type=button value=Helloworld!>");
           client.println("</form>");
+
+          client.println("<select name=cars>");
+		  client.println("<option value=volvo>Volvo</option>");
+		  client.println("<option value=saab>Saab</option>");
+		  client.println("<option value=fiat>Fiat</option>");
+		  client.println("<option value=audi>Audi</option>");
+		  client.println("</select>");
           client.println("</html>");
           break;
         }
