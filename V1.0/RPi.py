@@ -1,6 +1,6 @@
 ######################
-#	RPi to WeChat	 #	
-#		V1.0 		 #
+#	RPi to WeChat
+#	V1.0
 ######################
 
 # 导入GPIO和requests库
