@@ -6,7 +6,7 @@ function echo_server_log($log){
 }
 
 //定义TOKEN
-define ( "TOKEN", "linlin" );
+define ( "TOKEN", "ulink" );
 
 //验证微信公众平台签名
 function checkSignature() {
@@ -65,68 +65,62 @@ $toUserName = $xmlObj->ToUserName;
 $msgType = $xmlObj->MsgType;
 
 
-if($msgType == 'voice') {
+if($msgType == 'voice') {//判断是否为语音
 	$content = $xmlObj->Recognition;
 }elseif($msgType == 'text'){
 	$content = $xmlObj->Content;
 }else{
-	$retMsg = '只支持文本消息';
+	$retMsg = '只支持文本和语音消息';
 }
 
-if (!strstr($content, "温度")) {
-	if (strstr($content, "开灯")) {
-		$con = mysql_connect(SAE_MYSQL_HOST_M.':'.SAE_MYSQL_PORT,SAE_MYSQL_USER,SAE_MYSQL_PASS); 
-
-
-		$dati = date("h:i:sa");
-		mysql_select_db("app_ulinkb", $con);
-
-		$sql ="UPDATE onoff SET timestamp='$dati',state = '1'
-		WHERE sign = '332'";
-
-		if(!mysql_query($sql,$con)){
-		    die('Error: ' . mysql_error());
-		}else{
-		    echo "yes";
-		}
-		mysql_close($con);
-        $retMsg = "好的主人";
-	}else if (strstr($content, "关灯")) {
-		$con = mysql_connect(SAE_MYSQL_HOST_M.':'.SAE_MYSQL_PORT,SAE_MYSQL_USER,SAE_MYSQL_PASS); 
-
-
-		$dati = date("h:i:sa");
-		mysql_select_db("app_ulinkb", $con);
-
-		$sql ="UPDATE onoff SET timestamp='$dati',state = '0'
-		WHERE sign = '332'";
-
-		if(!mysql_query($sql,$con)){
-		    die('Error: ' . mysql_error());
-		}else{
-		    echo "yes";
-		}
-		mysql_close($con);
-        $retMsg = "好的主人";
-	}else if (strstr($content, "aha")) {
-		$retMsg = "asdqwrassd";
-	}else{
-		$retMsg = "抱歉，暂时不支持该命令";
-	}
-}else{
+if (strstr($content, "温度")) {
 	$con = mysql_connect(SAE_MYSQL_HOST_M.':'.SAE_MYSQL_PORT,SAE_MYSQL_USER,SAE_MYSQL_PASS); 
-	mysql_select_db("app_ulinkb", $con);
+	mysql_select_db("app_ulink42", $con);//修改数据库名
 
-	$result = mysql_query("SELECT * FROM temprt");
-	while($row = mysql_fetch_array($result)){
-	  $msdata = $row['data'];
+	$result = mysql_query("SELECT * FROM sensor");
+	while($arr = mysql_fetch_array($result)){
+	  if ($arr['ID'] == 1) {
+	  	$tempr = $arr['data'];
+	  }
 	}
-	$tempr = $msdata;
 	mysql_close($con);
 
     $retMsg = "报告大王："."\n"."主人房间的室温为".$tempr."℃，感谢您对主人的关心";
-}
+}else if (strstr($content, "开灯")) {
+	$con = mysql_connect(SAE_MYSQL_HOST_M.':'.SAE_MYSQL_PORT,SAE_MYSQL_USER,SAE_MYSQL_PASS); 
 
+
+	$dati = date("h:i:sa");
+	mysql_select_db("app_ulink42", $con);//修改数据库名
+
+	$sql ="UPDATE switch SET timestamp='$dati',state = '1'
+	WHERE ID = '1'";//修改开关状态值
+
+	if(!mysql_query($sql,$con)){
+	    die('Error: ' . mysql_error());
+	}else{
+		mysql_close($con);
+		$retMsg = "好的主人";
+	}
+}else if (strstr($content, "关灯")) {
+	$con = mysql_connect(SAE_MYSQL_HOST_M.':'.SAE_MYSQL_PORT,SAE_MYSQL_USER,SAE_MYSQL_PASS); 
+
+
+	$dati = date("h:i:sa");
+	mysql_select_db("app_ulink42", $con);//修改数据库名
+
+	$sql ="UPDATE switch SET timestamp='$dati',state = '0'
+	WHERE ID = '1'";//修改开关状态值
+
+	if(!mysql_query($sql,$con)){
+	    die('Error: ' . mysql_error());
+	}else{
+		mysql_close($con);
+		$retMsg = "好的主人";
+	}	
+}else{
+	$retMsg = "暂时不支持该命令";
+}
 
 //装备XML
 $retTmp = "<xml>
@@ -139,6 +133,6 @@ $retTmp = "<xml>
 		</xml>";
 $resultStr = sprintf($retTmp, $fromUserName, $toUserName, time(), $retMsg);
 
-//反馈
+//反馈到微信服务器
 echo $resultStr;
 ?>
